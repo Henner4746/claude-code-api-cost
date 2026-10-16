@@ -1,0 +1,8 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Zeigt in Claude Desktop unten den API-Listenpreis der Session; Klick klappt die Aufteilung pro Modell auf.",
+  "author": { "name": "Henrik" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
