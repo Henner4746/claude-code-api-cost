@@ -1,27 +1,62 @@
-# api
+<div align="center">
 
-Mod für Claude Desktop (Code-Tab). Zeigt unten rechts neben dem Modellnamen einen Knopf `API $x.xx` mit dem, was die aktuelle Session zu Anthropic-Listenpreisen kosten würde. Ein Klick klappt über dem Eingabefeld die Aufteilung pro Modell auf, dazu die Summe und eine grobe Schätzung der Anthropic-Selbstkosten (40 % des Listenpreises, abgeleitet aus berichteten Bruttomargen, keine offizielle Zahl).
+# API
 
-## Voraussetzungen
+**See what your Claude Code session would cost at API prices.**<br>
+A tiny button in Claude Desktop. One click, per-model breakdown.
 
-- Windows, Claude Desktop mit Code-Tab
-- [`ccusage`](https://github.com/ryoppippi/ccusage) global installiert: `npm install -g ccusage`
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platform: Windows](https://img.shields.io/badge/platform-Windows-0078d4)
+![Claude Desktop](https://img.shields.io/badge/Claude%20Desktop-Code%20tab-d97757)
 
-## Installation
+[Deutsch](README.de.md)
 
-In Claude Desktop: Plus neben dem Eingabefeld, Plugins, Add marketplace, dann den Pfad oder `Henner4746/claude-code-api-cost` eintragen und das Plugin `api` hinzufügen.
+<img src="assets/preview.svg" alt="Preview: API button next to the model name, expanded list above the input" width="720">
 
-Im Terminal:
+</div>
+
+## What it does
+
+- Shows **`API $x.xx`** bottom right, next to the model name, in every local chat.
+- One click expands a list above the input: **cost per model, the total, and a rough estimate of what it costs Anthropic to serve it**.
+- Updates after every reply. Reads your local usage logs through [ccusage](https://github.com/ryoppippi/ccusage); nothing leaves your machine.
+
+> The numbers are **list prices** of the Anthropic API, not your actual bill. This is useful if you use a plan or a proxy and want to know the value of what you consume. The "Anthropic" line is a rough guess (40 % of list price, based on reported gross margins), not an official figure.
+
+## Install
+
+**1. Install ccusage** (once):
+
+```
+npm install -g ccusage
+```
+
+**2. Add the marketplace and the plugin** (two commands, any terminal):
 
 ```
 claude plugin marketplace add Henner4746/claude-code-api-cost
 claude plugin install api@henrik-mods --scope user
 ```
 
-Danach die App neu starten. Der Knopf erscheint in jedem lokalen Chat.
+**3. Restart Claude Desktop.** The button appears in every local chat.
 
-## Hinweise
+Prefer clicking? In Claude Desktop: **+ next to the prompt → Plugins → Add marketplace**, enter `Henner4746/claude-code-api-cost`, then **Add plugin → api**. You can switch it on and off there at any time.
 
-- Der Knopf liest die Werte nach jeder Antwort neu aus `ccusage session --json`.
-- Die Liste liegt im Bereich über dem Eingabefeld und wird von Fragekästen verdeckt.
-- Cloud-Chats laden keine lokalen Plugins.
+## Notes
+
+| | |
+|---|---|
+| Requirements | Windows, Claude Desktop with the Code tab, Node.js (for ccusage) |
+| Cloud chats | Not supported. They do not load local plugins. |
+| List position | The expanded list sits above the input and is hidden while a question dialog is shown. |
+| Terminal `claude plugin list` | An older CLI may report "failed to load". The plugin uses the newer hooks format that the desktop app understands. |
+
+## Uninstall
+
+```
+claude plugin uninstall api@henrik-mods
+```
+
+## License
+
+[MIT](LICENSE)

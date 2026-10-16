@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="Segoe UI, system-ui, sans-serif">
+  <rect width="760" height="250" rx="14" fill="#1b1b1d"/>
+  <rect x="40" y="26" width="680" height="92" rx="10" fill="#242427" stroke="#33333a"/>
+  <text x="60" y="52" font-size="14" fill="#8d8d96">opus-5-5</text>
+  <text x="640" y="52" font-size="14" fill="#8d8d96" text-anchor="end">$4.74</text>
+  <text x="60" y="74" font-size="14" fill="#8d8d96">sonnet-5-5</text>
+  <text x="640" y="74" font-size="14" fill="#8d8d96" text-anchor="end">$1.48</text>
+  <text x="60" y="98" font-size="15" font-weight="600" fill="#f2f2f4">Total</text>
+  <text x="640" y="98" font-size="15" font-weight="600" fill="#f2f2f4" text-anchor="end">$6.22</text>
+  <rect x="40" y="132" width="680" height="52" rx="14" fill="#202023" stroke="#3a3a42"/>
+  <text x="64" y="164" font-size="15" fill="#6d6d76">Type / for commands</text>
+  <text x="40" y="214" font-size="13" fill="#9a9aa3">Accept edits automatically</text>
+  <rect x="530" y="198" width="92" height="24" rx="7" fill="#33333a"/>
+  <text x="576" y="215" font-size="13" font-weight="600" fill="#f2f2f4" text-anchor="middle">API $6.22 ▾</text>
+  <text x="660" y="215" font-size="13" fill="#f2f2f4" text-anchor="end">Opus 5.5</text>
+  <text x="716" y="215" font-size="13" fill="#6d9eff" text-anchor="end">Medium</text>
+</svg>

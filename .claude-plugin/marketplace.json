@@ -2,6 +2,6 @@
   "name": "henrik-mods",
   "owner": { "name": "Henrik" },
   "plugins": [
-    { "name": "api", "source": "./api", "description": "Zeigt in Claude Desktop den API-Listenpreis der Session, Klick klappt die Aufteilung pro Modell auf." }
+    { "name": "api", "source": "./api", "description": "Shows the API list price of your Claude Desktop session; one click expands the per-model breakdown." }
   ]
 }
