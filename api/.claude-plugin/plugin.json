@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Shows the API list price of your Claude Desktop session; one click expands the per-model breakdown.",
   "author": { "name": "Henrik" },
   "license": "MIT",

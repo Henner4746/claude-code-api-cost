@@ -6,6 +6,8 @@ import type { Row } from '../types'
 const PANE = 'api-kosten'
 const SELF_COST = 0.4
 const rowsAtom = atom({ plugin: 'api', key: 'rows' } as const, [])
+const totalAtom = atom({ plugin: 'api', key: 'total' } as const, { cost: 0, tokens: 0 })
+const busyAtom = atom({ plugin: 'api', key: 'busy' } as const, false)
 const openAtom = atom({ plugin: 'api', key: 'isOpen' } as const, false)
 
 const usd = (n: number) => `$${n.toFixed(2)}`
@@ -19,27 +21,50 @@ export const register: Register = on => {
       description: 'API-Wert dieser Session pro Modell',
     })
     const started = await next(e)
-    $.ui.status(undefined)
     void (async () => {
+      const busy = await read($, busyAtom)
+      if (busy) {
+        return
+      }
+      await update($, busyAtom, () => true)
       try {
         const id = await $.session.id()
-        const r = await $.process.run(
-          ['cmd', '/c', 'ccusage', 'session', '--json', '--offline', '--since', '20260101'],
-          { timeoutMs: 120000 },
+        const quick = await $.process.run(
+          ['cmd', '/c', 'ccusage', 'session', '--id', id, '--json', '--offline'],
+          { timeoutMs: 60000 },
         )
-        const hit = JSON.parse(r.stdout).session.find((s: any) => s.period === id)
-        const rows: Row[] = (hit?.modelBreakdowns ?? []).map((m: any) => ({
-          model: String(m.modelName).replace('claude-', ''),
-          cost: Number(m.cost),
-          tokens:
-            Number(m.inputTokens) +
-            Number(m.outputTokens) +
-            Number(m.cacheCreationTokens) +
-            Number(m.cacheReadTokens),
-        }))
-        await update($, rowsAtom, () => rows)
+        const q = JSON.parse(quick.stdout)
+        const known = await read($, totalAtom)
+        const cost = Number(q.totalCost) || 0
+        const tokens = Number(q.totalTokens) || 0
+        if (known.cost !== cost || known.tokens !== tokens) {
+          await update($, totalAtom, () => ({ cost, tokens }))
+          $.ui.invalidate('ui.render')
+          const started = (await $.session.usage()).startedAt
+          const since = started
+            ? new Date(started).toISOString().slice(0, 10).split('-').join('')
+            : '20260101'
+          const slow = await $.process.run(
+            ['cmd', '/c', 'ccusage', 'session', '--json', '--offline', '--since', since],
+            { timeoutMs: 120000 },
+          )
+          const hit = JSON.parse(slow.stdout).session.find((s: any) => s.period === id)
+          const rows: Row[] = (hit?.modelBreakdowns ?? []).map((m: any) => ({
+            model: String(m.modelName).replace('claude-', ''),
+            cost: Number(m.cost) || 0,
+            tokens:
+              (Number(m.inputTokens) || 0) +
+              (Number(m.outputTokens) || 0) +
+              (Number(m.cacheCreationTokens) || 0) +
+              (Number(m.cacheReadTokens) || 0),
+          }))
+          await update($, rowsAtom, () => rows)
+          $.ui.invalidate('ui.render')
+        }
       } catch {
         // keine Daten: Anzeige bleibt wie sie ist
+      } finally {
+        await update($, busyAtom, () => false)
       }
     })()
     return started
@@ -47,27 +72,50 @@ export const register: Register = on => {
 
   on('turn.complete', async ($, e, next) => {
     const done = await next(e)
-    $.ui.status(undefined)
     void (async () => {
+      const busy = await read($, busyAtom)
+      if (busy) {
+        return
+      }
+      await update($, busyAtom, () => true)
       try {
         const id = await $.session.id()
-        const r = await $.process.run(
-          ['cmd', '/c', 'ccusage', 'session', '--json', '--offline', '--since', '20260101'],
-          { timeoutMs: 120000 },
+        const quick = await $.process.run(
+          ['cmd', '/c', 'ccusage', 'session', '--id', id, '--json', '--offline'],
+          { timeoutMs: 60000 },
         )
-        const hit = JSON.parse(r.stdout).session.find((s: any) => s.period === id)
-        const rows: Row[] = (hit?.modelBreakdowns ?? []).map((m: any) => ({
-          model: String(m.modelName).replace('claude-', ''),
-          cost: Number(m.cost),
-          tokens:
-            Number(m.inputTokens) +
-            Number(m.outputTokens) +
-            Number(m.cacheCreationTokens) +
-            Number(m.cacheReadTokens),
-        }))
-        await update($, rowsAtom, () => rows)
+        const q = JSON.parse(quick.stdout)
+        const known = await read($, totalAtom)
+        const cost = Number(q.totalCost) || 0
+        const tokens = Number(q.totalTokens) || 0
+        if (known.cost !== cost || known.tokens !== tokens) {
+          await update($, totalAtom, () => ({ cost, tokens }))
+          $.ui.invalidate('ui.render')
+          const started = (await $.session.usage()).startedAt
+          const since = started
+            ? new Date(started).toISOString().slice(0, 10).split('-').join('')
+            : '20260101'
+          const slow = await $.process.run(
+            ['cmd', '/c', 'ccusage', 'session', '--json', '--offline', '--since', since],
+            { timeoutMs: 120000 },
+          )
+          const hit = JSON.parse(slow.stdout).session.find((s: any) => s.period === id)
+          const rows: Row[] = (hit?.modelBreakdowns ?? []).map((m: any) => ({
+            model: String(m.modelName).replace('claude-', ''),
+            cost: Number(m.cost) || 0,
+            tokens:
+              (Number(m.inputTokens) || 0) +
+              (Number(m.outputTokens) || 0) +
+              (Number(m.cacheCreationTokens) || 0) +
+              (Number(m.cacheReadTokens) || 0),
+          }))
+          await update($, rowsAtom, () => rows)
+          $.ui.invalidate('ui.render')
+        }
       } catch {
         // keine Daten: Anzeige bleibt wie sie ist
+      } finally {
+        await update($, busyAtom, () => false)
       }
     })()
     return done
@@ -79,17 +127,15 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
-    const rows: Row[] = await read($, rowsAtom)
+    const total = await read($, totalAtom)
     const isOpen = await read($, openAtom)
-    const total = rows.reduce((a, b) => a + b.cost, 0)
-    const tokens = rows.reduce((a, b) => a + b.tokens, 0)
     const { Box, Button, Text } = $.ui.resolve(e)
     return (
       <Box key="api-root" flexDirection="row">
         {e.props.modes.length > 0 && <Text dimColor>{e.props.modes.join(' & ')}  </Text>}
         <Button
           key="api"
-          label={`API ${usd(total)} · ${tok(tokens)} ${isOpen ? '▾' : '▸'}`}
+          label={`API ${usd(total.cost)} · ${tok(total.tokens)} ${isOpen ? '▾' : '▸'}`}
           onPress={async () => {
             await update($, openAtom, v => !v)
             $.ui.invalidate('ui.render')
@@ -105,30 +151,30 @@ export const register: Register = on => {
       return next(e)
     }
     const rows: Row[] = await read($, rowsAtom)
-    const total = rows.reduce((a, b) => a + b.cost, 0)
+    const total = await read($, totalAtom)
     const { Box, Text } = $.ui.resolve(e)
     return (
       <Box flexDirection="column">
         {rows.map(r => (
           <Text dimColor>{r.model}  {usd(r.cost)}  {tok(r.tokens)}</Text>
         ))}
-        <Text>Gesamt  {usd(total)}  {tok(rows.reduce((a, b) => a + b.tokens, 0))}</Text>
-        <Text dimColor>Anthropic, geschätzt  ~{usd(total * SELF_COST)}</Text>
+        <Text>Gesamt  {usd(total.cost)}  {tok(total.tokens)}</Text>
+        <Text dimColor>Anthropic, geschätzt  ~{usd(total.cost * SELF_COST)}</Text>
       </Box>
     )
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const rows: Row[] = await read($, rowsAtom)
-    const total = rows.reduce((a, b) => a + b.cost, 0)
+    const total = await read($, totalAtom)
     const { Box, Text } = $.ui.resolve(e)
     return (
       <Box flexDirection="column">
         {rows.map(r => (
           <Text>{r.model}  {usd(r.cost)}  {tok(r.tokens)}</Text>
         ))}
-        <Text bold>Gesamt (Listenpreis)  {usd(total)}  {tok(rows.reduce((a, b) => a + b.tokens, 0))}</Text>
-        <Text>Anthropic-Selbstkosten, geschätzt  ~{usd(total * SELF_COST)}</Text>
+        <Text bold>Gesamt (Listenpreis)  {usd(total.cost)}  {tok(total.tokens)}</Text>
+        <Text>Anthropic-Selbstkosten, geschätzt  ~{usd(total.cost * SELF_COST)}</Text>
         <Text dimColor>Schätzung: ~40 % des Listenpreises, abgeleitet aus berichteten 50–60 % Bruttomarge. Keine offizielle Zahl.</Text>
       </Box>
     )
