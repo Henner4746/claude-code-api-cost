@@ -13,8 +13,8 @@ Ein kleiner Knopf in Claude Desktop. Ein Klick, Aufteilung pro Modell.
 
 ## Was es macht
 
-- Zeigt **`API $x.xx`** unten rechts neben dem Modellnamen, in jedem lokalen Chat.
-- Ein Klick klappt über dem Eingabefeld eine Liste auf: **Kosten pro Modell, Summe und eine grobe Schätzung, was es Anthropic kostet**.
+- Zeigt **`API $x.xx · 4,8M`** (Kosten und Tokens der aktuellen Session) unten rechts neben dem Modellnamen, in jedem lokalen Chat.
+- Ein Klick klappt über dem Eingabefeld eine Liste auf: **Kosten und Tokens pro Modell, Summe und eine grobe Schätzung, was es Anthropic kostet**.
 - Aktualisiert sich nach jeder Antwort. Liest deine lokalen Nutzungsdaten über [ccusage](https://github.com/ryoppippi/ccusage), nichts verlässt deinen Rechner.
 
 > Die Zahlen sind **Listenpreise** der Anthropic-API, nicht deine echte Rechnung. Praktisch, wenn du einen Tarif oder einen Proxy nutzt und den Wert deines Verbrauchs wissen willst. Die Zeile „Anthropic“ ist eine grobe Schätzung (40 % des Listenpreises, aus berichteten Bruttomargen), keine offizielle Zahl.
