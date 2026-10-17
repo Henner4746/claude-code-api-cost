@@ -10,8 +10,8 @@
   <rect x="40" y="132" width="680" height="52" rx="14" fill="#202023" stroke="#3a3a42"/>
   <text x="64" y="164" font-size="15" fill="#6d6d76">Type / for commands</text>
   <text x="40" y="214" font-size="13" fill="#9a9aa3">Accept edits automatically</text>
-  <rect x="420" y="198" width="120" height="24" rx="7" fill="#33333a"/>
-  <text x="480" y="215" font-size="13" font-weight="600" fill="#f2f2f4" text-anchor="middle">API $6.22 · 4.8M ▾</text>
+  <rect x="392" y="198" width="148" height="24" rx="7" fill="#33333a"/>
+  <text x="466" y="215" font-size="13" font-weight="600" fill="#f2f2f4" text-anchor="middle">API $6.22 · 4.8M ▾</text>
   <text x="636" y="215" font-size="13" fill="#f2f2f4" text-anchor="end">Opus 5.5</text>
   <text x="716" y="215" font-size="13" fill="#6d9eff" text-anchor="end">Medium</text>
 </svg>
